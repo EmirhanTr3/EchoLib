@@ -39,6 +39,8 @@ fun CommandContext<CommandSourceStack>.getPlayers(argument: String): List<Player
     return players
 }
 
+abstract class PluginSubCommand<T: EchoPlugin>(plugin: T) : PluginCommand<T>(plugin)
+
 abstract class PluginCommand<T: EchoPlugin>(protected val plugin: T) {
     open val aliases = setOf<String>()
     

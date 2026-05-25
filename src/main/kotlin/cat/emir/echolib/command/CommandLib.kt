@@ -12,13 +12,16 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 class CommandLib {
 
     companion object {
+        /**
+         * Commands extending [PluginSubCommand] will not be registered automatically, use their [PluginSubCommand.getCommand] function inside another command instead to use them.
+         */
         fun <T : EchoPlugin> registerCommands(plugin: T, pkg: String) {
             plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { manager ->
                 val registrar = manager.registrar()
                 ClassUtils.findClasses(
                     plugin = plugin,
                     pkg = pkg,
-                    condition = { it.extendsSuperclass(PluginCommand::class.java) },
+                    condition = { it.extendsSuperclass(PluginCommand::class.java) && !it.extendsSuperclass(PluginSubCommand::class.java) },
                     function = {
                         val command = it.loadClass().asSubclass(PluginCommand::class.java).constructors[0].newInstance(plugin) as PluginCommand<*>
                         if (command.meetsRequirements()) {
@@ -79,6 +82,10 @@ class CommandLib {
             val commandBuilder = CommandBuilder(name)
             commandBuilder.setup(commandBuilder.node)
             node.then(commandBuilder.node)
+        }
+
+        fun subcommand(builder: LiteralArgumentBuilder<CommandSourceStack>) {
+            node.then(builder)
         }
 
         /**

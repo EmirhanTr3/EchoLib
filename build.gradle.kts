@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "cat.emir"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
@@ -18,6 +18,8 @@ dependencies {
 //    !! THESE ARE REQUIRED TO BE ADDED TO THE PLUGINS AS paperLibrary!!
     compileOnly("org.spongepowered:configurate-yaml:4.1.2")
     compileOnly("io.github.classgraph:classgraph:4.8.179")
+    compileOnly("com.h2database:h2:2.3.232")
+    compileOnly("com.zaxxer:HikariCP:7.0.2")
 }
 
 publishing {
