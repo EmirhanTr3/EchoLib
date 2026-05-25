@@ -9,7 +9,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.div
 
-class PluginConfig(val plugin: EchoPlugin) {
+class PluginConfig(val plugin: EchoPlugin, val file: String) {
     lateinit var loader: YamlConfigurationLoader
     lateinit var rootNode: CommentedConfigurationNode
 
@@ -24,11 +24,11 @@ class PluginConfig(val plugin: EchoPlugin) {
     fun load() {
         val logger = plugin.slF4JLogger
 
-        val configPath = this.plugin.dataPath / "config.yml"
+        val configPath = this.plugin.dataPath / file
         if (!Files.exists(configPath)) {
             logger.info("Generating config from plugin...")
             try {
-                this.plugin.getResource("config.yml").use { inputStream ->
+                this.plugin.getResource(file).use { inputStream ->
                     if (inputStream == null) {
                         logger.error("There is no config.yml packaged in the plugin.")
                         return
