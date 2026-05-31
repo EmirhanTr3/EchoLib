@@ -6,8 +6,11 @@ import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.suggestion.Suggestions
+import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import java.util.concurrent.CompletableFuture
 
 class CommandLib {
 
@@ -104,5 +107,9 @@ class CommandLib {
 
     class ArgumentBuilder<T>(name: String, type: ArgumentType<T>) : CommandNode {
         override val node: RequiredArgumentBuilder<CommandSourceStack, T> = RequiredArgumentBuilder.argument(name, type)
+
+        fun suggests(block: (CommandContext<CommandSourceStack>, SuggestionsBuilder) -> CompletableFuture<Suggestions>) {
+            node.suggests(block)
+        }
     }
 }

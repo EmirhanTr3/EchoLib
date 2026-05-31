@@ -1,24 +1,25 @@
 package cat.emir.echolib
 
+import org.spongepowered.configurate.CommentedConfigurationNode
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.IOException
 import java.nio.file.Files
-
-import org.spongepowered.configurate.CommentedConfigurationNode
-import org.spongepowered.configurate.ConfigurateException
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.div
 
-class PluginConfig(val plugin: EchoPlugin, val file: String) {
+class Language(val plugin: EchoPlugin, val file: String) {
     lateinit var loader: YamlConfigurationLoader
     lateinit var rootNode: CommentedConfigurationNode
 
-    fun saveConfig() {
-        try {
-            loader.save(this.rootNode)
-        } catch (e: ConfigurateException) {
-            plugin.slF4JLogger.error("Couldn't save config:", e)
-        }
+    private lateinit var resourceLoader: YamlConfigurationLoader
+    private lateinit var resourceRootNode: CommentedConfigurationNode
+
+    fun getOrNull(vararg path: String): String? {
+        return rootNode.node(*path).string ?: resourceRootNode.node(*path).string
+    }
+
+    fun get(vararg path: String): String {
+        return getOrNull(*path) ?: path.joinToString(".")
     }
 
     fun load() {
@@ -26,7 +27,7 @@ class PluginConfig(val plugin: EchoPlugin, val file: String) {
 
         val configPath = this.plugin.dataPath / file
         if (!Files.exists(configPath)) {
-            logger.info("Generating config from plugin...")
+            logger.info("Generating language from plugin...")
             try {
                 this.plugin.getResource(file).use { inputStream ->
                     if (inputStream == null) {
@@ -38,20 +39,25 @@ class PluginConfig(val plugin: EchoPlugin, val file: String) {
                     Files.copy(inputStream, configPath, StandardCopyOption.REPLACE_EXISTING)
                 }
             } catch (e: IOException) {
-                logger.error("An error occured while copying the config from the plugin:", e)
+                logger.error("An error occured while copying the language from the plugin:", e)
                 return
             }
         }
 
-        logger.info("Loading configuration file...")
+        logger.info("Loading language file...")
         loader = YamlConfigurationLoader.builder()
-                .path(configPath)
-                .build()
+            .path(configPath)
+            .build()
+
+        resourceLoader = YamlConfigurationLoader.builder()
+            .source { this.plugin.getResource(file)!!.bufferedReader() }
+            .build()
 
         try {
             rootNode = loader.load()
+            resourceRootNode = resourceLoader.load()
         } catch (e: IOException) {
-            logger.error("An error occured while loading the configuration:", e)
+            logger.error("An error occured while loading the language file:", e)
         }
     }
 }
