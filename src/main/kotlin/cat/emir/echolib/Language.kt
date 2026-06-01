@@ -1,6 +1,11 @@
 package cat.emir.echolib
 
+import cat.emir.echolib.extensions.toComponent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.spongepowered.configurate.CommentedConfigurationNode
+import org.spongepowered.configurate.ScopedConfigurationNode
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.io.IOException
 import java.nio.file.Files
@@ -11,15 +16,24 @@ class Language(val plugin: EchoPlugin, val file: String) {
     lateinit var loader: YamlConfigurationLoader
     lateinit var rootNode: CommentedConfigurationNode
 
-    private lateinit var resourceLoader: YamlConfigurationLoader
-    private lateinit var resourceRootNode: CommentedConfigurationNode
+    lateinit var resourceLoader: YamlConfigurationLoader
+    lateinit var resourceRootNode: CommentedConfigurationNode
 
-    fun getOrNull(vararg path: String): String? {
-        return rootNode.node(*path).string ?: resourceRootNode.node(*path).string
+    val all: Map<String, String>
+        get() = internalAll.toMap()
+    private var internalAll = mapOf<String, String>()
+
+    fun getOrNull(path: String): String? {
+        return rootNode.node(path.split(".")).string ?: resourceRootNode.node(path.split(".")).string
     }
 
-    fun get(vararg path: String): String {
-        return getOrNull(*path) ?: path.joinToString(".")
+    fun get(path: String): String {
+        return getOrNull(path) ?: "<error>Missing language key: <fatal>$path<fatal></error>"
+    }
+
+    fun get(path: String, data: List<Pair<String, String>>): Component {
+        return get(path)
+            .toComponent(TagResolver.resolver(data.map { Placeholder.unparsed(it.first, it.second) }))
     }
 
     fun load() {
@@ -59,5 +73,28 @@ class Language(val plugin: EchoPlugin, val file: String) {
         } catch (e: IOException) {
             logger.error("An error occured while loading the language file:", e)
         }
+
+        internalAll = findAllLangKeys()
+    }
+
+    private fun findAllLangKeys(): Map<String, String> {
+        val rootNode = findLangKeys(rootNode.childrenMap())
+        val resourceRootNode = findLangKeys(resourceRootNode.childrenMap())
+
+        return resourceRootNode + rootNode
+    }
+
+    private fun <N : ScopedConfigurationNode<N>> findLangKeys(map: Map<Any, N>, currentScopes: List<String> = emptyList()): Map<String, String> {
+        val resultMap = mutableMapOf<String, String>()
+
+        for ((key, value) in map) {
+            if (value.string != null) {
+                resultMap[(currentScopes + key).joinToString(".")] = value.string!!
+            } else {
+                resultMap.putAll(findLangKeys(value.childrenMap(), (currentScopes + key.toString())))
+            }
+        }
+
+        return resultMap
     }
 }
