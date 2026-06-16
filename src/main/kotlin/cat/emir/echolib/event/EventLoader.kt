@@ -10,7 +10,7 @@ class EventLoader {
             ClassUtils.findClasses(
                 plugin = plugin,
                 pkg = pkg,
-                condition = { it.implementsInterface(EchoEvent::class.java) },
+                condition = { it.extendsSuperclass(EchoEvent::class.java) },
                 function = {
                     val event = it.loadClass().constructors[0].newInstance(plugin) as EchoEvent
                     Bukkit.getPluginManager().registerEvents(event, plugin)
