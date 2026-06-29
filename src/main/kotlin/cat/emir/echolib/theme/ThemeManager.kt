@@ -4,11 +4,9 @@ import cat.emir.echolib.EchoPlugin
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.tag.Tag
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import java.util.ServiceLoader
 
-class ThemeManager private constructor(
-    val plugin: EchoPlugin,
-    val colors: Map<String, Int>
-) {
+class ThemeManager private constructor(val colors: Map<String, Int>) {
 
     fun getTagResolver(name: String): TagResolver? {
         val color = colors[name] ?: return null
@@ -22,14 +20,18 @@ class ThemeManager private constructor(
     }
 
     companion object {
-        lateinit var instance: ThemeManager
-            private set
+        private val emptyThemeManager = ThemeManager(emptyMap())
+
+        val instance: ThemeManager
+            get() = if (isInitialized) internalInstance else emptyThemeManager
+
+        private lateinit var internalInstance: ThemeManager
 
         private val isInitialized: Boolean
-            get() = ::instance.isInitialized
+            get() = ::internalInstance.isInitialized
 
         fun builder(plugin: EchoPlugin) : Builder {
-            if (::instance.isInitialized) {
+            if (::internalInstance.isInitialized) {
                 throw IllegalStateException("ThemeManager already initialized, you cannot create a theme manager.")
             }
             return Builder(plugin)
@@ -57,8 +59,8 @@ class ThemeManager private constructor(
             if (isInitialized) {
                 throw IllegalStateException("ThemeManager already initialized, you cannot create a theme manager.")
             }
-            instance = ThemeManager(plugin, colors)
-            return instance
+            internalInstance = ThemeManager(colors)
+            return internalInstance
         }
     }
 }
