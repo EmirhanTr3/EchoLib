@@ -4,6 +4,8 @@ import cat.emir.echolib.extensions.toComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import org.bukkit.Server
+import org.bukkit.command.CommandSender
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.ScopedConfigurationNode
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
@@ -12,7 +14,40 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.div
 
+fun CommandSender.sendLangMessage(path: String) {
+    if (!Language.isInitialized) throw UnsupportedOperationException("Language not initialized!")
+    this.sendMessage(Language.instance.get(path).toComponent())
+}
+
+fun CommandSender.sendLangMessage(path: String, data: List<Pair<String, String>>) {
+    if (!Language.isInitialized) throw UnsupportedOperationException("Language not initialized!")
+    this.sendMessage(Language.instance.get(path, data))
+}
+
+fun Server.sendLangMessage(path: String) {
+    if (!Language.isInitialized) throw UnsupportedOperationException("Language not initialized!")
+    this.sendMessage(Language.instance.get(path).toComponent())
+}
+
+fun Server.sendLangMessage(path: String, data: List<Pair<String, String>>) {
+    if (!Language.isInitialized) throw UnsupportedOperationException("Language not initialized!")
+    this.sendMessage(Language.instance.get(path, data))
+}
+
 class Language(val plugin: EchoPlugin, val file: String) {
+
+    companion object {
+        lateinit var instance: Language
+            private set
+
+        val isInitialized: Boolean
+            get() = ::instance.isInitialized
+    }
+
+    init {
+        instance = this
+    }
+
     lateinit var loader: YamlConfigurationLoader
     lateinit var rootNode: CommentedConfigurationNode
 
