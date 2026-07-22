@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "cat.emir"
-version = "1.0.8"
+version = "1.0.9"
 
 repositories {
     mavenCentral()
@@ -20,6 +20,8 @@ dependencies {
     compileOnly("io.github.classgraph:classgraph:4.8.179")
     compileOnly("com.h2database:h2:2.3.232")
     compileOnly("com.zaxxer:HikariCP:7.0.2")
+    compileOnly("org.jetbrains.exposed:exposed-core:1.3.1")
+    compileOnly("org.jetbrains.exposed:exposed-jdbc:1.3.1")
 }
 
 publishing {
