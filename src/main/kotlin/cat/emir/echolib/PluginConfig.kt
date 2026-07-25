@@ -9,7 +9,11 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.div
 
-class PluginConfig(val plugin: EchoPlugin, val file: String) {
+class PluginConfig(
+    val plugin: EchoPlugin,
+    val file: String,
+    val loaderModifier: ((YamlConfigurationLoader.Builder) -> YamlConfigurationLoader.Builder)? = null
+) {
     lateinit var loader: YamlConfigurationLoader
     lateinit var rootNode: CommentedConfigurationNode
 
@@ -46,6 +50,7 @@ class PluginConfig(val plugin: EchoPlugin, val file: String) {
         logger.info("Loading configuration file...")
         loader = YamlConfigurationLoader.builder()
                 .path(configPath)
+                .let { loaderModifier?.invoke(it) ?: it }
                 .build()
 
         try {
