@@ -6,13 +6,13 @@ import org.bukkit.Bukkit
 
 class EventLoader {
     companion object {
-        fun registerEvents(plugin: EchoPlugin, pkg: String) {
+        fun registerListeners(plugin: EchoPlugin, pkg: String) {
             ClassUtils.findClasses(
                 plugin = plugin,
                 pkg = pkg,
-                condition = { it.extendsSuperclass(EchoEvent::class.java) },
+                condition = { it.extendsSuperclass(EchoListener::class.java) },
                 function = {
-                    val event = it.loadClass().constructors[0].newInstance(plugin) as EchoEvent
+                    val event = it.loadClass().constructors[0].newInstance(plugin) as EchoListener
                     Bukkit.getPluginManager().registerEvents(event, plugin)
                 }
             )

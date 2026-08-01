@@ -1,26 +1,20 @@
 package cat.emir.echolib.theme
 
 import cat.emir.echolib.EchoPlugin
+import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.tag.Tag
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
-import java.util.ServiceLoader
 
-class ThemeManager private constructor(val colors: Map<String, Int>) {
-
-    fun getTagResolver(name: String): TagResolver? {
-        val color = colors[name] ?: return null
-        return TagResolver.resolver(name, Tag.styling { it.color(TextColor.color(color)) })
-    }
+class ThemeManager private constructor(val tags: List<TagResolver>) {
 
     fun createTagResolver(): TagResolver {
-        return TagResolver.resolver(colors.map { (name, color) ->
-            TagResolver.resolver(name, Tag.styling { it.color(TextColor.color(color)) })
-        })
+        return TagResolver.resolver(tags)
     }
 
     companion object {
-        private val emptyThemeManager = ThemeManager(emptyMap())
+        private val emptyThemeManager = ThemeManager(emptyList())
 
         val instance: ThemeManager
             get() = if (isInitialized) internalInstance else emptyThemeManager
@@ -39,27 +33,41 @@ class ThemeManager private constructor(val colors: Map<String, Int>) {
     }
 
     class Builder(val plugin: EchoPlugin) {
-        private val colors = mutableMapOf<String, Int>()
+        private val tags = mutableListOf<TagResolver>()
 
         /**
          * @param color hex formatted as "#FFFFFF" or "FFFFFF"
          */
-        fun addColor(name: String, color: String) = apply {
-            colors[name] = color.removePrefix("#").toIntOrNull(16) ?: 0xFFFFFF
+        fun color(name: String, color: String) = apply {
+            tags.add(TagResolver.resolver(name, Tag.styling {
+                it.color(TextColor.color(color.removePrefix("#").toIntOrNull(16) ?: 0xFFFFFF))
+            }))
         }
 
         /**
          * @param color hex formatted as 0xFFFFFF
          */
-        fun addColor(name: String, color: Int) = apply {
-            colors[name] = color
+        fun color(name: String, color: Int) = apply {
+            tags.add(TagResolver.resolver(name, Tag.styling { it.color(TextColor.color(color)) }))
+        }
+
+        fun unparsed(name: String, string: String) = apply {
+            tags.add(Placeholder.unparsed(name, string))
+        }
+
+        fun parsed(name: String, string: String) = apply {
+            tags.add(Placeholder.parsed(name, string))
+        }
+
+        fun component(name: String, component: ComponentLike) = apply {
+            tags.add(Placeholder.component(name, component))
         }
 
         fun build(): ThemeManager {
             if (isInitialized) {
                 throw IllegalStateException("ThemeManager already initialized, you cannot create a theme manager.")
             }
-            internalInstance = ThemeManager(colors)
+            internalInstance = ThemeManager(tags)
             return internalInstance
         }
     }

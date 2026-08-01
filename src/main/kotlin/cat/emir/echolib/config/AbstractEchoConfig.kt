@@ -1,21 +1,20 @@
-package cat.emir.echolib
+package cat.emir.echolib.config
 
-import java.io.IOException
-import java.nio.file.Files
-
+import cat.emir.echolib.EchoPlugin
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.ConfigurateException
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.io.path.div
 
-class PluginConfig(
-    val plugin: EchoPlugin,
-    val file: String,
-    val loaderModifier: ((YamlConfigurationLoader.Builder) -> YamlConfigurationLoader.Builder)? = null
-) {
+abstract class AbstractEchoConfig(val plugin: EchoPlugin, val file: String) {
     lateinit var loader: YamlConfigurationLoader
+        private set
     lateinit var rootNode: CommentedConfigurationNode
+        private set
 
     fun saveConfig() {
         try {
@@ -48,15 +47,17 @@ class PluginConfig(
         }
 
         logger.info("Loading configuration file...")
-        loader = YamlConfigurationLoader.builder()
-                .path(configPath)
-                .let { loaderModifier?.invoke(it) ?: it }
-                .build()
+        loader = buildLoader(configPath)
 
         try {
             rootNode = loader.load()
         } catch (e: IOException) {
             logger.error("An error occured while loading the configuration:", e)
         }
+
+        finishLoading()
     }
+
+    abstract fun buildLoader(configPath: Path) : YamlConfigurationLoader
+    open fun finishLoading() {}
 }

@@ -16,7 +16,7 @@ class CommandLib {
 
     companion object {
         /**
-         * Commands extending [PluginSubCommand] will not be registered automatically, use their [PluginSubCommand.getCommand] function inside another command instead to use them.
+         * Commands extending [EchoSubCommand] will not be registered automatically, use their [EchoSubCommand.getCommand] function inside another command instead to use them.
          */
         fun <T : EchoPlugin> registerCommands(plugin: T, pkg: String) {
             plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { manager ->
@@ -24,9 +24,9 @@ class CommandLib {
                 ClassUtils.findClasses(
                     plugin = plugin,
                     pkg = pkg,
-                    condition = { it.extendsSuperclass(PluginCommand::class.java) && !it.extendsSuperclass(PluginSubCommand::class.java) },
+                    condition = { it.extendsSuperclass(EchoCommand::class.java) && !it.extendsSuperclass(EchoSubCommand::class.java) },
                     function = {
-                        val command = it.loadClass().asSubclass(PluginCommand::class.java).constructors[0].newInstance(plugin) as PluginCommand<*>
+                        val command = it.loadClass().asSubclass(EchoCommand::class.java).constructors[0].newInstance(plugin) as EchoCommand<*>
                         if (command.meetsRequirements()) {
                             registrar.register(command.getCommand().build(), command.aliases)
                             plugin.logger.info("[CommandLib] [${it.simpleName}] Registered command ${command.getCommand().literal}" +
