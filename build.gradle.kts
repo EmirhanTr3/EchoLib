@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "cat.emir"
-version = "1.1.0"
+version = "1.1.1"
 
 repositories {
     mavenCentral()
@@ -16,8 +16,8 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
 //    !! THESE ARE REQUIRED TO BE ADDED TO THE PLUGINS AS paperLibrary!!
-    compileOnly("org.spongepowered:configurate-yaml:4.1.2")
-    compileOnly("org.spongepowered:configurate-extra-kotlin:4.1.2")
+    compileOnly("org.spongepowered:configurate-yaml:4.2.0")
+    compileOnly("org.spongepowered:configurate-extra-kotlin:4.2.0")
     compileOnly("io.github.classgraph:classgraph:4.8.179")
     compileOnly("com.h2database:h2:2.3.232")
     compileOnly("com.zaxxer:HikariCP:7.0.2")
