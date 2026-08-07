@@ -49,7 +49,9 @@ class TypedEchoConfig<T : Any>(
     }
 
     override fun finishLoading() {
-        _typedConfig = rootNode.get(type)
-            ?: throw ConfigurateException(rootNode, "Config $file could not be loaded. Default values will be loaded")
+        val node = rootNode.get(type)
+        _typedConfig = node
+        if (node == null)
+            plugin.slF4JLogger.error("Config $file could not be loaded. Default values will be loaded", rootNode)
     }
 }

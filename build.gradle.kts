@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "cat.emir"
-version = "1.1.1"
+version = "1.1.2"
 
 repositories {
     mavenCentral()
@@ -23,6 +23,10 @@ dependencies {
     compileOnly("com.zaxxer:HikariCP:7.0.2")
     compileOnly("org.jetbrains.exposed:exposed-core:1.3.1")
     compileOnly("org.jetbrains.exposed:exposed-jdbc:1.3.1")
+}
+
+java {
+    withSourcesJar()
 }
 
 publishing {

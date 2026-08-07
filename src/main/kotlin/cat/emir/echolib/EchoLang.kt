@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.spongepowered.configurate.CommentedConfigurationNode
@@ -53,17 +54,28 @@ class EchoLang(val plugin: EchoPlugin, val file: String) {
         get() = internalAll.toMap()
     private var internalAll = mapOf<String, String>()
 
+    private fun parseData(data: List<Pair<String, String>>): TagResolver {
+        return TagResolver.resolver(data.map { Placeholder.unparsed(it.first, it.second) })
+    }
+
     fun getOrNull(path: String): String? {
-        return rootNode.node(path.split(".")).string ?: resourceRootNode.node(path.split(".")).string
+        val nodePath = path.split(".")
+        var list = rootNode.node(nodePath).getList(String::class.java)
+        if (list.isNullOrEmpty()) {
+            list = resourceRootNode.node(nodePath).getList(String::class.java)
+        }
+        if (list.isNullOrEmpty()) {
+            return null
+        }
+        return list.joinToString("\n")
     }
 
     fun get(path: String): String {
-        return getOrNull(path) ?: "<error>Missing language key: <fatal>$path<fatal></error>"
+        return getOrNull(path) ?: "<error>Missing language key: <fatal>$path</fatal></error>"
     }
 
     fun get(path: String, data: List<Pair<String, String>>): Component {
-        return get(path)
-            .toComponent(TagResolver.resolver(data.map { Placeholder.unparsed(it.first, it.second) }))
+        return get(path).toComponent(parseData(data))
     }
 
     fun load() {
