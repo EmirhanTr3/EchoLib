@@ -16,6 +16,9 @@ fun Duration.toReadableString(short: Boolean = false, separator: String = " "): 
             if (short) "$value$shortForm" else "$value ${if (value > 1) plural else singular}"
         } else null
 
+    if ((this.toMillis() / 1000) < 1) return part(this.toMillis() / 50, "tick", "ticks", "t")
+        ?: if (short) "0s" else "0 second"
+
     val strings = listOfNotNull(
         part(this.toDays(), "day", "days", "d"),
         part(this.toHoursPart().toLong(), "hour", "hours", "h"),
@@ -31,7 +34,7 @@ fun Duration.toReadableString(short: Boolean = false, separator: String = " "): 
  * @return [Duration] or null
  */
 fun String.toDuration(): Duration? {
-    val durationUnit = "months?|mo|minutes?|m|weeks?|w|years?|y|seconds?|s|hours?|h|days?|d"
+    val durationUnit = "y|years?|mo|months?|w|weeks?|d|days?|h|hours?|m|minutes?|s|seconds?|t|ticks?"
     val durationRegex = Regex("(\\d+)\\s*($durationUnit)", RegexOption.IGNORE_CASE)
     val durationValidationRegex = Regex("^(?:\\s*\\d+\\s*($durationUnit)\\s*)+$", RegexOption.IGNORE_CASE)
 
@@ -45,6 +48,7 @@ fun String.toDuration(): Duration? {
         val type = if (unit.startsWith("mo")) "mo" else unit.first().toString()
 
         duration = when (type) {
+            "t" -> duration.plusMillis(number * 50)
             "s" -> duration.plusSeconds(number)
             "m" -> duration.plusMinutes(number)
             "h" -> duration.plusHours(number)

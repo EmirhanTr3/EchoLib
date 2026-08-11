@@ -1,7 +1,6 @@
 package cat.emir.echolib.command
 
 import cat.emir.echolib.EchoPlugin
-import cat.emir.echolib.command.CommandLib.CommandAction
 import cat.emir.echolib.command.CommandLib.CommandBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -13,16 +12,18 @@ import org.bukkit.entity.Player
  * returns the executor player if present
  */
 fun CommandContext<CommandSourceStack>.getPlayer(): Player? {
-    if (this.source.sender is Player) return this.source.sender as Player
-    this.source.sender.sendRichMessage("<red>You cannot run this command as console.</red>")
-    return null
+    if (this.source.sender !is Player) {
+        this.source.sender.sendRichMessage("<red>You cannot run this command as console.</red>")
+        return null
+    }
+    return this.source.sender as Player
 }
 
 /**
  * returns the player from a player argument with provided name
  */
-fun CommandContext<CommandSourceStack>.getPlayer(argument: String): Player? {
-    val player = this.getArgument(argument, PlayerSelectorArgumentResolver::class.java).resolve(this.source).firstOrNull()
+fun CommandContext<CommandSourceStack>.getPlayer(name: String): Player? {
+    val player = this.getArgument(name, PlayerSelectorArgumentResolver::class.java).resolve(this.source).firstOrNull()
     if (player == null) {
         this.source.sender.sendRichMessage("<red>No player was found</red>")
         return null
@@ -30,8 +31,8 @@ fun CommandContext<CommandSourceStack>.getPlayer(argument: String): Player? {
     return player
 }
 
-fun CommandContext<CommandSourceStack>.getPlayers(argument: String): List<Player>? {
-    val players = this.getArgument(argument, PlayerSelectorArgumentResolver::class.java).resolve(this.getSource())
+fun CommandContext<CommandSourceStack>.getPlayers(name: String): List<Player>? {
+    val players = this.getArgument(name, PlayerSelectorArgumentResolver::class.java).resolve(this.getSource())
     if (players.isEmpty()) {
         this.source.sender.sendRichMessage("<red>No player was found</red>")
         return null
@@ -50,15 +51,6 @@ abstract class EchoCommand<T: EchoPlugin>(protected val plugin: T) {
     ): LiteralArgumentBuilder<CommandSourceStack> {
         val builder = CommandBuilder(name)
         builder.setup(builder.node)
-        return builder.node
-    }
-
-    /**
-     * for java compatibility
-     */
-    fun command(name: String, setup: CommandAction<CommandBuilder>): LiteralArgumentBuilder<CommandSourceStack> {
-        val builder = CommandBuilder(name)
-        setup.accept(builder)
         return builder.node
     }
 

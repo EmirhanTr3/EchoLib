@@ -30,7 +30,7 @@ class CommandLib {
                         if (command.meetsRequirements()) {
                             registrar.register(command.getCommand().build(), command.aliases)
                             plugin.logger.info("[CommandLib] [${it.simpleName}] Registered command ${command.getCommand().literal}" +
-                                    if (!command.aliases.isEmpty())
+                                    if (command.aliases.isNotEmpty())
                                         " with aliases ${command.aliases.joinToString(", ")}"
                                     else ""
                             )
@@ -41,10 +41,6 @@ class CommandLib {
                 )
             }
         }
-    }
-
-    fun interface CommandAction<T> {
-        fun accept(builder: T)
     }
 
     interface CommandNode {
@@ -68,19 +64,6 @@ class CommandLib {
             node.then(argumentBuilder.node)
         }
 
-        /**
-         * for java compatibility
-         */
-        fun <T> argument(
-            name: String,
-            type: ArgumentType<T>,
-            setup: CommandAction<ArgumentBuilder<T>>
-        ) {
-            val argumentBuilder = ArgumentBuilder(name, type)
-            setup.accept(argumentBuilder)
-            node.then(argumentBuilder.node)
-        }
-
         fun subcommand(name: String, setup: CommandBuilder.(LiteralArgumentBuilder<CommandSourceStack>) -> Unit) {
             val commandBuilder = CommandBuilder(name)
             commandBuilder.setup(commandBuilder.node)
@@ -89,15 +72,6 @@ class CommandLib {
 
         fun subcommand(builder: LiteralArgumentBuilder<CommandSourceStack>) {
             node.then(builder)
-        }
-
-        /**
-         * for java compatibility
-         */
-        fun subcommand(name: String, setup: CommandAction<CommandBuilder>) {
-            val commandBuilder = CommandBuilder(name)
-            setup.accept(commandBuilder)
-            node.then(commandBuilder.node)
         }
     }
 
