@@ -1,6 +1,8 @@
 package cat.emir.echolib.config
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoPlugin
+import cat.emir.echolib.plugin.dataPath
+import cat.emir.echolib.plugin.slF4JLogger
 import org.spongepowered.configurate.CommentedConfigurationNode
 import org.spongepowered.configurate.ConfigurateException
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader

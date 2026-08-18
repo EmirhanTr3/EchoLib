@@ -1,12 +1,12 @@
 package cat.emir.echolib.event
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoJavaPlugin
 import cat.emir.echolib.utils.ClassUtils
 import org.bukkit.Bukkit
 
 class EventLoader {
     companion object {
-        fun registerListeners(plugin: EchoPlugin, pkg: String) {
+        fun registerListeners(plugin: EchoJavaPlugin, pkg: String) {
             ClassUtils.findClasses(
                 plugin = plugin,
                 pkg = pkg,

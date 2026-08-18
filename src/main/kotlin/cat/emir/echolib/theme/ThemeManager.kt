@@ -1,6 +1,6 @@
 package cat.emir.echolib.theme
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoPlugin
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.tag.Tag

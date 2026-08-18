@@ -1,7 +1,7 @@
 package cat.emir.echolib.config
 
-import cat.emir.echolib.EchoPlugin
-import org.spongepowered.configurate.ConfigurateException
+import cat.emir.echolib.plugin.EchoPlugin
+import cat.emir.echolib.plugin.slF4JLogger
 import org.spongepowered.configurate.kotlin.dataClassFieldDiscoverer
 import org.spongepowered.configurate.kotlin.extensions.get
 import org.spongepowered.configurate.objectmapping.ObjectMapper

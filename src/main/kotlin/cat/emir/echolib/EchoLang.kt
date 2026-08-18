@@ -1,11 +1,11 @@
 package cat.emir.echolib
 
 import cat.emir.echolib.extensions.toComponent
+import cat.emir.echolib.plugin.EchoJavaPlugin
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.spongepowered.configurate.CommentedConfigurationNode
@@ -30,7 +30,7 @@ fun Audience.sendLangMessage(path: String, data: List<Pair<String, String>>) {
     this.sendMessage(EchoLang.instance.get(path, data))
 }
 
-class EchoLang(val plugin: EchoPlugin, val file: String) {
+class EchoLang(val plugin: EchoJavaPlugin, val file: String) {
 
     companion object {
         lateinit var instance: EchoLang

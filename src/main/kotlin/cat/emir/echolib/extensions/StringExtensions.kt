@@ -1,6 +1,6 @@
 package cat.emir.echolib.extensions
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoPlugin
 import cat.emir.echolib.theme.ThemeManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver

@@ -1,6 +1,6 @@
 package cat.emir.echolib.command
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoPlugin
 import cat.emir.echolib.command.CommandLib.CommandBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext

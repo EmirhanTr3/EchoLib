@@ -1,6 +1,6 @@
 package cat.emir.echolib.database
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoPlugin
 import org.jetbrains.exposed.v1.jdbc.Database
 
 abstract class ExposedFileDatabase(plugin: EchoPlugin, name: String) : AbstractFileDatabase(plugin, name) {

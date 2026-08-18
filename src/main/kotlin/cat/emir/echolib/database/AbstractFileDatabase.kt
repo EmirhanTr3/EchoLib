@@ -1,10 +1,10 @@
 package cat.emir.echolib.database
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoPlugin
+import cat.emir.echolib.plugin.dataFolder
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import java.nio.file.Path
-import java.sql.Connection
 import kotlin.io.path.div
 
 abstract class AbstractFileDatabase(plugin: EchoPlugin, name: String) {

@@ -1,6 +1,6 @@
 package cat.emir.echolib.utils
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoPlugin
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
 

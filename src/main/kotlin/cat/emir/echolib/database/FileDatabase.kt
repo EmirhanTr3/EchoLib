@@ -1,6 +1,6 @@
 package cat.emir.echolib.database
 
-import cat.emir.echolib.EchoPlugin
+import cat.emir.echolib.plugin.EchoPlugin
 import java.sql.Connection
 
 abstract class FileDatabase(plugin: EchoPlugin, name: String) : AbstractFileDatabase(plugin, name) {
