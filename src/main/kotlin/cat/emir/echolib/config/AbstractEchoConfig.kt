@@ -17,10 +17,21 @@ abstract class AbstractEchoConfig(val plugin: EchoPlugin, val file: String) {
         private set
     lateinit var rootNode: CommentedConfigurationNode
         private set
+    var dataPath = plugin.dataPath
+    var finalFile: String = file
 
-    fun saveConfig() {
+    init {
+        if (file.contains("/")) {
+            val split = file.split("/")
+            finalFile = split.last()
+            dataPath /= split.dropLast(1).joinToString("/")
+        }
+    }
+
+    @Deprecated("not really supported but exists, use on your own risk")
+    fun save() {
         try {
-            loader.save(this.rootNode)
+            loader.save(rootNode)
         } catch (e: ConfigurateException) {
             plugin.slF4JLogger.error("Couldn't save config:", e)
         }
@@ -29,11 +40,11 @@ abstract class AbstractEchoConfig(val plugin: EchoPlugin, val file: String) {
     fun load() {
         val logger = plugin.slF4JLogger
 
-        val configPath = this.plugin.dataPath / file
+        val configPath = dataPath / finalFile
         if (!Files.exists(configPath)) {
-            logger.info("Generating config from plugin...")
+            logger.info("Generating config $file from plugin...")
             try {
-                this.plugin.getResource(file).use { inputStream ->
+                plugin.getResource(file).use { inputStream ->
                     if (inputStream == null) {
                         logger.error("There is no $file packaged in the plugin.")
                         return
@@ -48,7 +59,7 @@ abstract class AbstractEchoConfig(val plugin: EchoPlugin, val file: String) {
             }
         }
 
-        logger.info("Loading configuration file...")
+        logger.info("Loading configuration file $file...")
         loader = buildLoader(configPath)
 
         try {

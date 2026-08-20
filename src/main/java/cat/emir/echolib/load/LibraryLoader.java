@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.aether.artifact.Artifact;
@@ -58,9 +57,7 @@ public class LibraryLoader implements PluginLoader {
 
     public PluginLibraries load() {
         try (var in = getClass().getResourceAsStream("/paper-libraries.json")) {
-            if (in == null)
-                return new Gson().fromJson("{}", PluginLibraries.class);
-
+            if (in == null) return new Gson().fromJson("{}", PluginLibraries.class);
             return new Gson().fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), PluginLibraries.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -69,19 +66,16 @@ public class LibraryLoader implements PluginLoader {
 
     record PluginLibraries(Map<String, String> repositories, List<String> dependencies) {
         public Stream<Dependency> asDependencies() {
-            return dependencies.stream()
-                    .map(d -> new Dependency(new DefaultArtifact(d), null));
+            return dependencies.stream().map(d -> new Dependency(new DefaultArtifact(d), null));
         }
 
         public Stream<RemoteRepository> asRepositories() {
             return repositories.entrySet().stream()
                     .map(e -> {
-                        if (e.getKey().equals("MavenRepo")) {
+                        if (e.getValue().contains("repo.maven.apache.org/maven2")) {
                             e.setValue(MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR);
                         }
-                        RemoteRepository.Builder builder = new RemoteRepository.Builder(e.getKey(), "default",
-                                e.getValue());
-                        return builder.build();
+                        return new RemoteRepository.Builder(e.getKey(), "default", e.getValue()).build();
                     });
         }
     }
