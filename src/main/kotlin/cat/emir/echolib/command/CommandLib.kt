@@ -1,6 +1,6 @@
 package cat.emir.echolib.command
 
-import cat.emir.echolib.plugin.EchoJavaPlugin
+import cat.emir.echolib.plugin.EchoPaperPlugin
 import cat.emir.echolib.utils.ClassUtils
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -18,7 +18,7 @@ class CommandLib {
         /**
          * Commands extending [EchoSubCommand] will not be registered automatically, use their [EchoSubCommand.getCommand] function inside another command instead to use them.
          */
-        fun <T : EchoJavaPlugin> registerCommands(plugin: T, pkg: String) {
+        fun <T : EchoPaperPlugin> registerCommands(plugin: T, pkg: String) {
             plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { manager ->
                 val registrar = manager.registrar()
                 ClassUtils.findClasses(

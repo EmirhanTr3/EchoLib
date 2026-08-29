@@ -1,15 +1,10 @@
 package cat.emir.echolib.plugin
 
-import net.kyori.adventure.text.minimessage.MiniMessage
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Path
 
 interface EchoPlugin {
-    companion object {
-        val miniMessage = MiniMessage.miniMessage()
-    }
-
     fun getDataPath(): Path
     fun getDataFolder(): File
     fun getLogger(): java.util.logging.Logger

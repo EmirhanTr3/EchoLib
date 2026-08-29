@@ -1,7 +1,7 @@
 package cat.emir.echolib
 
 import cat.emir.echolib.extensions.toComponent
-import cat.emir.echolib.plugin.EchoJavaPlugin
+import cat.emir.echolib.plugin.EchoPaperPlugin
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import net.kyori.adventure.audience.Audience
@@ -30,7 +30,7 @@ fun Audience.sendLangMessage(path: String, data: List<Pair<String, String>>) {
     this.sendMessage(EchoLang.instance.get(path, data))
 }
 
-class EchoLang(val plugin: EchoJavaPlugin, val file: String) {
+class EchoLang(val plugin: EchoPaperPlugin, val file: String) {
 
     companion object {
         lateinit var instance: EchoLang

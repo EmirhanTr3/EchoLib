@@ -1,7 +1,8 @@
 package cat.emir.echolib.command.arguments
 
-import cat.emir.echolib.extensions.nameOrUniqueId
+import cat.emir.echolib.lib.EchoLib
 import cat.emir.echolib.extensions.toComponent
+import cat.emir.echolib.lib.paper
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
@@ -36,19 +37,11 @@ class CachedOfflinePlayerArgument(
     }
 
     override fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
-        val list = mutableListOf<String>()
-        list.addAll(Bukkit.getServer().onlinePlayers.map { it.name })
+        val online = Bukkit.getOnlinePlayers().map { it.name }
+        val offline = if (suggestOffline) EchoLib.instance.paper.offlinePlayerCache.suggestions(builder.remaining) else emptyList()
 
-        if (suggestOffline) {
-            val offlinePlayers = Bukkit.getServer().offlinePlayers
-                .filter { !it.isOnline }
-                .filter { it.nameOrUniqueId.startsWith(builder.remaining, true) }
-
-            offlinePlayers.subList(0, 50.coerceAtMost(offlinePlayers.size))
-                .forEach { list.add(it.nameOrUniqueId) }
-        }
-
-        list.filter { it.startsWith(builder.remaining, true) }
+        (online + offline).distinct()
+            .filter { it.startsWith(builder.remaining, true) }
             .forEach { builder.suggest(it) }
 
         return builder.buildFuture()
