@@ -10,13 +10,13 @@ import java.time.temporal.ChronoUnit
  * @param separator Separator for the string when there are multiple durations; `1 days, 1 hour`
  * @return [String]
  */
-fun Duration.toReadableString(short: Boolean = false, separator: String = " "): String {
+fun Duration.toReadableString(short: Boolean = false, separator: String = " ", allowTicks: Boolean = false): String {
     fun part(value: Long, singular: String, plural: String, shortForm: String) =
         if (value != 0L) {
             if (short) "$value$shortForm" else "$value ${if (value > 1) plural else singular}"
         } else null
 
-    if ((this.toMillis() / 1000) < 1) return part(this.toMillis() / 50, "tick", "ticks", "t")
+    if (allowTicks && (this.toMillis() / 1000) < 1) return part(this.toMillis() / 50, "tick", "ticks", "t")
         ?: if (short) "0s" else "0 second"
 
     val strings = listOfNotNull(
@@ -33,8 +33,10 @@ fun Duration.toReadableString(short: Boolean = false, separator: String = " "): 
  * Parses a string to a duration.
  * @return [Duration] or null
  */
-fun String.toDuration(): Duration? {
-    val durationUnit = "y|years?|mo|months?|w|weeks?|d|days?|h|hours?|m|minutes?|s|seconds?|t|ticks?"
+fun String.toDuration(allowTicks: Boolean = false): Duration? {
+    val durationUnit = "y|years?|mo|months?|w|weeks?|d|days?|h|hours?|m|minutes?|s|seconds?" +
+            if (allowTicks) "|t|ticks?" else ""
+
     val durationRegex = Regex("(\\d+)\\s*($durationUnit)", RegexOption.IGNORE_CASE)
     val durationValidationRegex = Regex("^(?:\\s*\\d+\\s*($durationUnit)\\s*)+$", RegexOption.IGNORE_CASE)
 
